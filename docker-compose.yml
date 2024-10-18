@@ -1,0 +1,66 @@
+services:
+  # app:
+  #   image: registry.digitalocean.com/changename/core:7d038e8
+  #   labels:
+  #     - 'traefik.enable=true'
+  #     - 'traefik.http.routers.app.rule=Host(`api.changename.localhost`)'
+  #     # - 'traefik.http.routers.app.rule=Host(`api.changename.com`)'
+  #     - 'traefik.http.services.app.loadbalancer.server.port=3000'
+  #   # ports:
+  #   #   - '3000:3000'
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   env_file:
+  #     - .env
+  #   restart: always
+
+  # traefik:
+  #   image: traefik:v3.1
+  #   command:
+  #     - '--api.insecure=true'
+  #     - '--providers.docker=true'
+  #   ports:
+  #     # http
+  #     - '80:80'
+  #     # web ui
+  #     - '8080:8080'
+  #   volumes:
+  #     - '/var/run/docker.sock:/var/run/docker.sock:ro'
+
+  # whoami:
+  #   # A container that exposes an API to show its IP address
+  #   image: traefik/whoami
+  #   labels:
+  #     - 'traefik.http.routers.whoami.rule=Host(`whoami.docker.localhost`)'
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      # POSTGRES_DB: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    ports:
+      - '6379:6379'
+
+  resdinsights:
+    image: redislabs/redisinsight:latest
+    ports:
+      - '5540:5540'
+    volumes:
+      - redis-insight:/data
+
+volumes:
+  redis-insight:
+  pgdata:
+
+networks:
+  default:
+    name: traefik_network
